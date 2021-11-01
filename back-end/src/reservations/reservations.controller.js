@@ -135,10 +135,7 @@ async function update(req, res) {
     ...existingReservation,
     ...newReservationDetails,
   };
-  let updatedReservation = await service.update(
-    reservation_id,
-    mergedReservation
-  );
+  let updatedReservation = await service.update(reservation_id, mergedReservation);
   res.status(200).json({ data: updatedReservation });
 }
 
@@ -149,10 +146,9 @@ async function updateStatus(req, res) {
   res.status(200).json({ data: { status: newStatus } });
 }
 
-async function list(req, res) {
-  const { date } = req.query;
-  const data = await service.list(date);
-  res.json({data: data});
+function list(req, res) {
+  const { data } = res.locals;
+  res.json({ data: data });
 }
 
 // *****
