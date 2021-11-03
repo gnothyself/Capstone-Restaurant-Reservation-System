@@ -38,7 +38,7 @@ function hasValidValues() {
    return function (req, res, next) {
         const { reservation_date, reservation_time, people } = req.body.data;
 
-        if (!Number.isInteger(people) || people < 1) {
+        if (people < 1) {
             return next({
             status: 400,
             message: "# of people must be a whole number and >= 1",

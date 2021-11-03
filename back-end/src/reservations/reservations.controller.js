@@ -146,9 +146,18 @@ async function updateStatus(req, res) {
   res.status(200).json({ data: { status: newStatus } });
 }
 
-function list(req, res) {
-  const { data } = res.locals;
-  res.json({ data: data });
+async function list(req, res) {
+  if (req.query.date) {
+    const reservations = await service.listByDate(req.query.date);
+    return res.json({
+      data: [...reservations],
+    });
+  } else if (req.query.mobile_number) {
+    const reservations = await service.search(req.query.mobile_number);
+    return res.json({
+      data: [...reservations],
+    });
+  }
 }
 
 // *****
@@ -178,7 +187,6 @@ module.exports = {
     asyncErrorBoundary(updateStatus),
   ],
   list: [
-    byDateOrPhone,
     asyncErrorBoundary(list)
   ],
 };

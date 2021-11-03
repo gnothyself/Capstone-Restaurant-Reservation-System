@@ -1,26 +1,53 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useQuery from "../utils/useQuery";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import { today, previous, next } from "../utils/date-time";
 import formatDisplayDate from "../utils/format-display-date";
 import ErrorAlert from "../layout/ErrorAlert";
-import Reservations from "../reservations/Reservations";
+import Reservation from "../reservations/Reservation";
+import Table from "../tables/Table";
 
-/**
- * Defines the dashboard page.
- * @param date
- *  the date for which the user wants to view reservations.
- * @returns {JSX.Element}
- */
 function Dashboard({ date }) {
-
+  const history = useHistory();
+  const query = useQuery();
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
+  const [tables, setTables] = useState([]);
 
   const dateInUrl = useQuery().get("date");
   if (dateInUrl) {
     date = dateInUrl;
+  }
+
+  useEffect(() => {
+    if (!dateInUrl) history.push(`/dashboard?date=${date}`);
+  }, [query, history, dateInUrl, date]);
+
+  useEffect(loadDashboard, [date, history, dateInUrl]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    listReservations({ date }, abortController.signal)
+      .then(setReservations)
+      .catch(setReservationsError);
+  }, [tables, date]);
+
+
+  function loadDashboard() {
+    if (dateInUrl !== date) {
+      history.push(`/dashboard?date=${date}`);
+    }
+    const abortController = new AbortController();
+    const abortController2 = new AbortController();
+    setReservationsError(null);
+    listReservations({ date }, abortController.signal)
+      .then(setReservations)
+      .catch((err)=> {
+        setReservationsError(new Error(err))
+      });
+    listTables(abortController2.signal).then(setTables);
+    return () => abortController.abort();
   }
 
   // useEffect(() => {
@@ -32,18 +59,53 @@ function Dashboard({ date }) {
   //     });
   // }, []);
 
-  useEffect(loadReservations, [date]);
+  // useEffect(loadReservations, [date]);
 
-  function loadReservations() {
-    const abortController = new AbortController();
-    setReservationsError(null);
+  // function loadReservations() {
+  //   const abortController = new AbortController();
+  //   setReservationsError(null);
 
-    listReservations({ date }, abortController.signal)
-      .then(setReservations)
-      .catch(setReservationsError);
+  //   listReservations({ date }, abortController.signal)
+  //     .then(setReservations)
+  //     .catch(setReservationsError);
 
-    return () => abortController.abort();
-  }
+  //   return () => abortController.abort();
+  // }
+
+   // load the reservations by date
+  //  useEffect(() => {
+  //   const abortController = new AbortController();
+
+  //   async function loadDashboard() {
+  //     try {
+  //       setReservationsError([]);
+  //       const reservationDate = await listReservations({ date }, abortController.signal);
+  //       setReservations(reservationDate);
+  //     } catch (error) {
+  //       setReservations([]);
+  //       setReservationsError(new Error(error));
+  //     }
+  //   }
+  //   loadDashboard();
+  //   return () => abortController.abort();
+  // }, [date]);
+ 
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+
+  //   async function loadTables() {
+  //     try {
+  //       setTablesError([]);
+  //       const tableList = await listTables(abortController.signal);
+  //       setTables(tableList);
+  //     } catch (error) {
+  //       setTables([]);
+  //       setTablesError([error.message]);
+  //     }
+  //   }
+  //   loadTables();
+  //   return () => abortController.abort();
+  // }, []);
 
   function DateNavigation() {
     return (
@@ -68,18 +130,29 @@ function Dashboard({ date }) {
       <h1>Dashboard</h1>
       <h4>{displayDate}</h4>
       <DateNavigation />
-      {/* <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for date</h4>
-      </div> */}
-      <ErrorAlert error={reservationsError} />
-      {/* {JSON.stringify(reservations)} */}
-      <div className="d-md-flex mb-3">
-        <div className="mb-3"> 
-          <div className="headingBar my-3 p-2">
-            <h2>Reservations</h2>
-          </div>
-          <Reservations reservations={reservations} />
-        </div> 
+      <div className="d-md-flex mb-3"></div>
+      {reservationsError ? <ErrorAlert error={reservationsError} /> : null}
+      <div className="row">
+        <div className="col-md-6 col-sm-12">
+          <h4>Reservations for date: {date}</h4>
+          {reservations.map((reservation, index) =>
+            reservation.status === "finished" ||
+            reservation.status === "cancelled" ? null : (
+              <Reservation
+                data={reservation}
+                setReservations={setReservations}
+                date={date}
+                index={index}
+              />
+            )
+          )}
+        </div>
+        <div className="col-md-6 col-sm-12">
+          <h4>Tables</h4>
+          {tables.map((table) => (
+            <Table data={table} setTables={setTables}/>
+          ))}
+        </div>
       </div>
     </main>
   );
