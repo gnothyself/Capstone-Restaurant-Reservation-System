@@ -80,17 +80,6 @@ function ReservationForm() {
         }
     }
 
-    if (name === "reservation_time") {
-        const open = 1030;
-        const close = 2130;
-        const reservation = value.substring(0, 2) + value.substring(3);
-        if (reservation > open && reservation < close) {
-            setError(null);
-        } else {
-            setError(new Error("Reservations are only allowed between 10:30am and 9:30pm."))
-        }
-    }
-
     setFormData({
         ...formData,
         [target.name]: target.value,
@@ -112,7 +101,13 @@ function ReservationForm() {
   const submitNew = () => {
     const abortController = new AbortController();
     setError(null);
-
+    const open = 1030;
+    const close = 2130;
+    if (formData.reservation_time > open && formData.reservation_time < close) {
+      setError(null);
+  } else {
+      setError(new Error("Reservations are only allowed between 10:30am and 9:30pm."))
+  }
     postReservation(formData, abortController.signal)
       .then(() => history.push(`/dashboard?date=${formData.reservation_date}`))
       .catch(setError);

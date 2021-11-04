@@ -146,7 +146,7 @@ export async function postTable(tableDetails, signal) {
     body: JSON.stringify({ data: tableDetails }),
     signal,
   };
-  return await fetchJson(url, options);
+  return await fetchJson(url, options, []);
 }
 
 export async function finishTable(table_id, signal) {
