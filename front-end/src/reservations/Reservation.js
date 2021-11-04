@@ -22,8 +22,8 @@ export default function Reservation({ data, setReservations, date, index }) {
       }
      
     return (
-        <div className="card" key={index}>
-        <div className="card-body" key={data.reservation_id}>
+        <div className="card">
+        <div className="card-body">
             <h5 className="card-title">
             Reservation for: {`${data.first_name} ${data.last_name}`}{" "}
             </h5>

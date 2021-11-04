@@ -138,19 +138,22 @@ function Dashboard({ date }) {
           {reservations.map((reservation, index) =>
             reservation.status === "finished" ||
             reservation.status === "cancelled" ? null : (
+              <div key={index}>
               <Reservation
                 data={reservation}
                 setReservations={setReservations}
                 date={date}
-                index={index}
               />
+              </div>
             )
           )}
         </div>
         <div className="col-md-6 col-sm-12">
           <h4>Tables</h4>
-          {tables.map((table) => (
+          {tables.map((table, index) => (
+            <div key={index}>
             <Table data={table} setTables={setTables}/>
+            </div>
           ))}
         </div>
       </div>

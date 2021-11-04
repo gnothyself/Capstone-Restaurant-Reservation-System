@@ -14,7 +14,7 @@ export default function Table({ data, setTables}) {
     }
   };
   return (
-    <div className="card" key={data.table_id}>
+    <div className="card">
       <div className="card-body">
         <h5 className="card-title">Table: {`${data.table_name}`}</h5>
         <p className="card-text">Capacity: {data.capacity}</p>
