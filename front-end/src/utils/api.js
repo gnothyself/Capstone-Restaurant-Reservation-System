@@ -96,7 +96,7 @@ export async function updateReservation(reservation_id, newReservation, signal) 
 // finds matching reservations by mobile_number
 export async function readByPhone(mobile_number, signal) {
   const url = `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`;
-  return await fetchJson(url, { signal });
+  return await fetchJson(url, { headers, signal }, []);
 }
 
 

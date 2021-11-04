@@ -104,29 +104,23 @@ import { useHistory } from "react-router-dom";
 import { postTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-/**
- * A controlled form used for creating a new table
- */
-
 function NewTable() {
   const [tablesError, setTablesError] = useState(null);
   const history = useHistory();
 
   const initialFormState = {
     table_name: "",
-    capacity: "",
+    capacity: 1,
+    reservation_id: null,
   };
 
   const [formData, setFormData] = useState({ ...initialFormState });
 
   const handleChange = ({ target }) => {
     let value = target.value;
-
-    // Fixes issue of *capacity* changing into a string
     if (target.name === "capacity" && typeof value === "string") {
       value = +value;
     }
-
     setFormData({
       ...formData,
       [target.name]: value,
@@ -135,87 +129,53 @@ function NewTable() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const abortController = new AbortController();
+
     setTablesError(null);
 
     postTable(formData, abortController.signal)
       .then(() => history.push(`/dashboard`))
       .catch(setTablesError);
-    return () => abortController.abort();
-  };
-
-  const handleCancel = (event) => {
-    event.preventDefault();
-    // cancelling a new table while in progress sends user back to previous page.
-    history.goBack();
+    // return () => abortController.abort();
   };
 
   return (
-    <section>
-      <div className="d-md-flex mb-3 text-center">
-        <h1 className="mb-0">New Table</h1>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <div className="row">
-          <div className="col-auto">
-            <div className="form-group form-row">
-              <label htmlFor="table_name" className="col-md-4 col-form-label">
-                Table Name:
-              </label>
-              <div className="col-8 pt-2">
-                <input
-                  id="table_name"
-                  type="text"
-                  name="table_name"
-                  className="form-control"
-                  onChange={handleChange}
-                  value={formData.table_name}
-                  required={true}
-                />
-              </div>
-            </div>
-            <div className="form-group form-row">
-              <label htmlFor="capacity" className="col-md-4 col-form-label">
-                Capacity:
-              </label>
-              <div className="col-3 pt-2">
-                <input
-                  id="capacity"
-                  type="number"
-                  name="capacity"
-                  className="form-control"
-                  onChange={handleChange}
-                  required={true}
-                  min="1"
-                  value={formData.capacity}
-                />
-              </div>
-            </div>
-            <div
-              className="btn-toolbar mb-5"
-              role="toolbar"
-              aria-label="Toolbar with form actions buttons"
-            >
-              <button
-                type="button"
-                value="Cancel"
-                className="btn btn-secondary mr-5"
-                onClick={handleCancel}
-              >
-                <span className="oi oi-action-undo mr-2" />
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary">
-                Submit
-                <span className="oi oi-check ml-2" />
-              </button>
-            </div>
-          </div>
+    <div>
+      <h2>New Table</h2>
+      <form name="table" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="table_name">Table Name</label>
+          <input
+            id="table_name"
+            type="text"
+            name="table_name"
+            onChange={handleChange}
+            value={formData.table_name}
+            placeholder="Table Name"
+            className="form-control"
+            required
+          ></input>
+          <label htmlFor="capacity">Capacity</label>
+          <input
+            id="capacity"
+            name="capacity"
+            onChange={handleChange}
+            value={formData.capacity}
+            type="number"
+            className="form-control"
+            min="1"
+            required
+          />
         </div>
+        <button type="submit" className="btn btn-primary mr-1">
+          Submit
+        </button>
+        <button onClick={() => history.goBack()} className="btn btn-danger">
+          Cancel
+        </button>
       </form>
-      <ErrorAlert error={tablesError} />
-    </section>
+    {tablesError ? <ErrorAlert error={tablesError} /> : null} 
+    </div>
   );
 }
 

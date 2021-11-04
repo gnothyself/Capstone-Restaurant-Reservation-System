@@ -1,78 +1,62 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import ErrorAlert from "../layout/ErrorAlert";
 import Reservation from "../reservations/Reservation";
 import { readByPhone } from "../utils/api";
+import { mobileFormat } from "../utils/validation";
 
-// defines the Search page
 export default function Search() {
-
-    const initialFormState = {
-        mobile_number: "",
-    };
-
-    const [form, setForm] = useState({...initialFormState});
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [searchResults, setSearchResults] = useState([]);
-    const [searchError, setSearchError] = useState([]);
-
-    const history = useHistory();
+    const [submit, setSubmit] = useState(false);
 
     const handleChange = ({ target }) => {
-        // set the form state
-        setForm({
-            ...form,
-            [target.name]: target.value,
-        });
+        let numberValidation = target.value;
+        numberValidation = mobileFormat(
+            numberValidation,
+            numberValidation.length
+        );
+        target.value = numberValidation;
+        setPhoneNumber(numberValidation);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const abortController = new AbortController();
-        // GET request - by mobile_number
-        async function findByPhone() {
-            try {
-                const response = await readByPhone(form.mobile_number, abortController.signal);
-                if (response.length === 0) {
-                    setSearchResults(["No reservations found"]);
-                } else {
-                    setSearchResults(response);
-                }
-            } catch (error) {
-                setSearchError([...searchError, error.message]);
-            }
-        }
-        // do not send GET request if there is a pending error message
-        if (searchError.length === 0) {
-            findByPhone();
-        }
+        readByPhone(phoneNumber)
+            .then((data) => {
+                setSearchResults(data);
+            })
+            .then(setSubmit(true));
     };
 
     return (
-        <>
-            <div className="headingBar d-md-flex my-3 p-2">
-                <h1>Search by Phone Number</h1>
-            </div>
-            <ErrorAlert error={searchError} />
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="mobile_number">Mobile Number</label>
-                    <input 
-                        className="form-control"
-                        type="text"
-                        name="mobile_number"
-                        id="mobile_number"
-                        placeholder="Enter a customer's phone number"
-                        onChange={handleChange}
-                        required="required"
-                        value={form.mobile_number}
-                    />
-                </div>
-                <button className="btn btn-dark mb-3" type="submit">Find</button>
-                <button className="btn btn-dark mx-3 mb-3" type="button" onClick={() => history.goBack()}>Cancel</button>
-            </form>
-            {searchResults[0] === "No reservations found" ? <h4>{searchResults[0]}</h4> : (
-                <Reservation data={searchResults} />
-            )}
-        </>
-    );
-}
+        <div>
+          <h2>Search</h2>
+          <form name="reservation" onSubmit={handleSubmit}>
+            <input
+              className="form-control col-sm-6 col-md-5 col-lg-3"
+              type="text"
+              name="mobile_number"
+              placeholder="Enter a customer's phone number"
+              onChange={handleChange}
+              value={phoneNumber}
+            ></input>
+            <button type="submit" className="btn btn-primary mt-2">
+              Find
+            </button>
+          </form>
+          {submit ? (
+            searchResults.length ? (
+              <div>
+                {searchResults.map((reservation) =>
+                  reservation.status === " finished" ? null : (
+                    <Reservation data={reservation} />
+                  )
+                )}
+              </div>
+            ) : (
+              <div> No reservations found</div>
+            )
+          ) : null}
+        </div>
+      );
+    }
+    

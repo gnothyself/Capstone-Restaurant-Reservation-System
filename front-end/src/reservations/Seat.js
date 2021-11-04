@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 import { readReservation, listTables, seatTable } from "../utils/api";
-import Reservation from "./Reservation";
+// import Reservation from "./Reservation";
 
 export default function Seat() {
-
     const initialFormState = {
-        table_id: "",
+        table_name: "",
+        capacity: null,
+        table_id: null,
     };
-    
     const [form, setForm] = useState({...initialFormState});
     const [reservation, setReservation] = useState({});
     const [tables, setTables] = useState([]);
-    const [seatError, setSeatError] = useState([]);
+    const [seatError, setSeatError] = useState(null);
 
     const history = useHistory();
     const { reservation_id } = useParams();
@@ -41,14 +41,13 @@ export default function Seat() {
     }, [reservation_id]);
 
     const handleChange = ({ target }) => {
-        // verify the party will fit at the selected table
         const selectedTable = tables.find(table => table.table_id === parseInt(target.value));
         if (selectedTable && selectedTable.capacity < reservation.people) {
-            setSeatError(["Reservation party size will not fit at selected table."]);
+            setSeatError(new Error("Reservation party size will not fit at selected table."));
         } else if (!selectedTable) {
-            setSeatError(["Please select a table."]);
+            setSeatError(new Error("Please select a table."));
         } else {
-            setSeatError([]);
+            setSeatError(null);
         }
         // set the form state
         setForm({
@@ -70,47 +69,39 @@ export default function Seat() {
             }
         }
         // do not send PUT request if there is a pending error message
-        if (seatError.length === 0) {
+        if (seatError === null) {
             seatReservation();
         }
     }
 
     return(
-        <>
-        <ErrorAlert error={seatError} />
-        <Reservation 
-            reservation_id={reservation.reservation_id}
-            first_name={reservation.first_name}
-            last_name={reservation.last_name}
-            mobile_number={reservation.mobile_number}
-            reservation_time={reservation.reservation_time}
-            people={reservation.people}
-            status={reservation.status}
-        />
-        <h3>Seat</h3>
-        <form onSubmit={handleSubmit}>
-            <div className="form-group">
-                <label htmlFor="table_id">
-                    Table Number
-                    <select
-                        className="form-control"
-                        id="table_id"
-                        name="table_id"
-                        onChange={handleChange}
-                        value={form.table_id}
-                    >
-                        <option value="">-- Select a Table --</option>
-                        {tables.map(table => (
-                            <option key={table.table_id} value={table.table_id}>
-                                {table.table_name} - {table.capacity}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-            </div>
-            <button className="btn btn-dark" type="submit">Submit</button>
-            <button className="btn btn-dark ml-3" type="button" onClick={() => history.goBack()}>Cancel</button>
-        </form>
-    </>
+        <div>
+            <h3>Assign Table</h3>
+            <form name="seat" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="table_id">
+                        Table Number</label>
+                        <select
+                            className="form-control"
+                            id="table_id"
+                            name="table_id"
+                            onChange={handleChange}
+                            value={form.table_id}
+                            required
+                        >
+                            <option value={[null, null]}>
+                                Select a Table</option>
+                                {tables.map(table => (
+                                    <option key={table.table_id} value={table.table_id}>
+                                        {`${table.table_name} (${table.capacity} seat)`}
+                                    </option>
+                                ))}
+                        </select>       
+                </div>
+                <button className="btn btn-dark" type="submit">Submit</button>
+                <button className="btn btn-dark ml-3" type="button" onClick={() => history.goBack()}>Cancel</button>
+            {seatError ? <ErrorAlert error={seatError} /> : null}
+            </form>
+        </div>
     );
 }

@@ -76,7 +76,7 @@ function ReservationForm() {
         } else if (reservation < now) {
             setError(new Error("Reservation must be in the future."));
         } else {
-            setError([]);
+            setError(null);
         }
     }
 
@@ -85,7 +85,7 @@ function ReservationForm() {
         const close = 2130;
         const reservation = value.substring(0, 2) + value.substring(3);
         if (reservation > open && reservation < close) {
-            setError([]);
+            setError(null);
         } else {
             setError(new Error("Reservations are only allowed between 10:30am and 9:30pm."))
         }
@@ -96,6 +96,13 @@ function ReservationForm() {
         [target.name]: target.value,
     });
   }
+
+  const peopleEdit = (event) => {
+    const changeObj = { ...formData };
+    changeObj[event.target.id] = event.target.value;
+    changeObj.people = Number(changeObj.people);
+    setFormData(changeObj);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -109,8 +116,6 @@ function ReservationForm() {
     postReservation(formData, abortController.signal)
       .then(() => history.push(`/dashboard?date=${formData.reservation_date}`))
       .catch(setError);
-
-    return () => abortController.abort();
   };
 
   const submitEdit = () => {
@@ -204,7 +209,7 @@ function ReservationForm() {
               id="people"
               type="number"
               name="people"
-              onChange={handleChange}
+              onChange={peopleEdit}
               required={true}
               min="1"
               value={formData.people}
