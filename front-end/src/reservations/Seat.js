@@ -8,7 +8,7 @@ export default function Seat() {
     const initialFormState = {
         table_name: "",
         capacity: null,
-        table_id: null,
+        table_id: "",
     };
     const [form, setForm] = useState({...initialFormState});
     const [reservation, setReservation] = useState({});
@@ -89,11 +89,11 @@ export default function Seat() {
                             value={form.table_id}
                             required
                         >
-                            <option value={[null, null]}>
+                            <option>
                                 Select a Table</option>
                                 {tables.map(table => (
                                     <option key={table.table_id} value={table.table_id}>
-                                        {`${table.table_name} (${table.capacity} seat)`}
+                                        {table.table_name} - {table.capacity}
                                     </option>
                                 ))}
                         </select>       

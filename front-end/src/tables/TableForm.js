@@ -110,22 +110,41 @@ function NewTable() {
 
   const initialFormState = {
     table_name: "",
-    capacity: 1,
+    capacity: "",
     reservation_id: null,
   };
 
   const [formData, setFormData] = useState({ ...initialFormState });
 
   const handleChange = ({ target }) => {
+    let name = target.name;
     let value = target.value;
-    if (target.name === "capacity" && typeof value === "string") {
-      value = +value;
+
+    // table_name must be at least 2 characters long
+    if (name === "table_name") {
+        if (value.length < 2) {
+            setTablesError(["Table Name must be at least 2 characters long."]);
+        } else {
+            setTablesError(null);
+        }
     }
+
+    // capacity must be a number greater than 0
+    if (name === "capacity") {
+        if (isNaN(value)) {
+          setTablesError(new Error("Capacity must be a number."));
+        } else if (value < 1) {
+          setTablesError(new Error("Capacity must be at least 1."));
+        } else {
+          setTablesError(null);
+        }
+    }
+    // set the form state
     setFormData({
-      ...formData,
-      [target.name]: value,
+        ...formData,
+        [target.name]: target.value,
     });
-  };
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -136,7 +155,7 @@ function NewTable() {
     postTable(formData, abortController.signal)
       .then(() => history.push(`/dashboard`))
       .catch(setTablesError);
-    // return () => abortController.abort();
+    return () => abortController.abort();
   };
 
   return (
@@ -163,6 +182,7 @@ function NewTable() {
             value={formData.capacity}
             type="number"
             className="form-control"
+            placeholder="1"
             min="1"
             required
           />

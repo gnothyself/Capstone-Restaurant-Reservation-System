@@ -50,63 +50,6 @@ function Dashboard({ date }) {
     return () => abortController.abort();
   }
 
-  // useEffect(() => {
-  //   fetch(`http://localhost:5000/reservations`)
-  //     .then((response) => response.json())
-  //     .then(setReservations)
-  //     .catch((error) => {
-  //       console.log(error)
-  //     });
-  // }, []);
-
-  // useEffect(loadReservations, [date]);
-
-  // function loadReservations() {
-  //   const abortController = new AbortController();
-  //   setReservationsError(null);
-
-  //   listReservations({ date }, abortController.signal)
-  //     .then(setReservations)
-  //     .catch(setReservationsError);
-
-  //   return () => abortController.abort();
-  // }
-
-   // load the reservations by date
-  //  useEffect(() => {
-  //   const abortController = new AbortController();
-
-  //   async function loadDashboard() {
-  //     try {
-  //       setReservationsError([]);
-  //       const reservationDate = await listReservations({ date }, abortController.signal);
-  //       setReservations(reservationDate);
-  //     } catch (error) {
-  //       setReservations([]);
-  //       setReservationsError(new Error(error));
-  //     }
-  //   }
-  //   loadDashboard();
-  //   return () => abortController.abort();
-  // }, [date]);
- 
-  // useEffect(() => {
-  //   const abortController = new AbortController();
-
-  //   async function loadTables() {
-  //     try {
-  //       setTablesError([]);
-  //       const tableList = await listTables(abortController.signal);
-  //       setTables(tableList);
-  //     } catch (error) {
-  //       setTables([]);
-  //       setTablesError([error.message]);
-  //     }
-  //   }
-  //   loadTables();
-  //   return () => abortController.abort();
-  // }, []);
-
   function DateNavigation() {
     return (
       <>
