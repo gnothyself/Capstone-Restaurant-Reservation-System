@@ -1,7 +1,6 @@
 import React from "react";
 import { listReservations, updateStatus } from "../utils/api";
 
-
 export default function Reservation({ data, setReservations, date, index }) {
 
     function cancelHandler() {

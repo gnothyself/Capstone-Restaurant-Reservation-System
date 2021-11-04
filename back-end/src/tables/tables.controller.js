@@ -176,28 +176,22 @@ async function list(req, res) {
   res.json({ data: data });
 }
 
-// Create handler for a new table
 async function create(req, res) {
   const data = await service.create(req.body.data);
   res.status(201).json({ data });
 }
 
-// Read a table
 async function read(req, res) {
-  //* res.locals.table is being set from tableExists()
   const { table } = res.locals;
   res.json({ data: table });
 }
 
-// update handler for either assigning or removing a reservation from a table
-//* resId and resStatus are coming from last middleware (occupy and deoccupy table) before update for BOTH adding and deleting reservation_ids from tables. They are needed for the knex transaction in tables.service.js
 async function update(req, res) {
   const { table, resId, resStatus } = res.locals;
   const updatedTable = { ...table };
   const data = await service.update(updatedTable, resId, resStatus);
   res.json({ data });
 }
-
 
 // *****
 module.exports = {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 import { readReservation, listTables, seatTable } from "../utils/api";
-// import Reservation from "./Reservation";
 
 export default function Seat() {
     const initialFormState = {
@@ -49,7 +48,6 @@ export default function Seat() {
         } else {
             setSeatError(null);
         }
-        // set the form state
         setForm({
             ...form,
             [target.name]: target.value,
@@ -59,7 +57,7 @@ export default function Seat() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const abortController = new AbortController();
-        // PUT request
+
         async function seatReservation() {
             try {
                 await seatTable(form, reservation_id, abortController.signal);
@@ -68,7 +66,7 @@ export default function Seat() {
                 setSeatError([...seatError, error.message]);
             }
         }
-        // do not send PUT request if there is a pending error message
+ 
         if (seatError === null) {
             seatReservation();
         }

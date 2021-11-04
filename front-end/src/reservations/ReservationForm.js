@@ -4,7 +4,6 @@ import { today, formatAsTime } from "../utils/date-time";
 import { postReservation, updateReservation, getReservation, } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-
 function ReservationForm() {
   const history = useHistory();
   const { params, url } = useRouteMatch();

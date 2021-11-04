@@ -19,7 +19,6 @@ function NewTable() {
     let name = target.name;
     let value = target.value;
 
-    // table_name must be at least 2 characters long
     if (name === "table_name") {
         if (value.length < 2) {
             setTablesError(new Error("Table Name must be at least 2 characters long."));
@@ -27,7 +26,7 @@ function NewTable() {
             setTablesError(null);
         }
     }
-    // capacity must be a number greater than 0
+
     if (name === "capacity") {
         if (isNaN(value)) {
           setTablesError(new Error("Capacity must be a number."));

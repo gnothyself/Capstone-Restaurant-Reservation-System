@@ -1,13 +1,13 @@
 const knex = require("../db/connection");
 
-// returns all tables
+// Returns all tables
 function list() {
   return knex("tables")
     .select("*")
     .orderBy("table_name");
 }
 
-// posts new table
+// Posts new table
 function create(table) {
   return knex("tables")
     .insert(table)
@@ -15,7 +15,7 @@ function create(table) {
     .then((newTables) => newTables[0]);
 }
 
-// returns a reservation for the specified id
+// Returns a reservation for the specified id
 function read(id) {
   return knex("tables")
     .select("*")
@@ -23,7 +23,7 @@ function read(id) {
     .then((result) => result[0]);
 }
 
-// updates table after being assigned a reservation - also updates reservation status
+// Updates table
 async function update(updatedTable, resId, updatedResStatus) {
   try {
     await knex.transaction(async (trx) => {
@@ -38,7 +38,6 @@ async function update(updatedTable, resId, updatedResStatus) {
         .then((updatedReservations) => updatedReservations[0]);
     });
   } catch (error) {
-    // If we get here, neither the reservation nor table updates have taken place.
     console.error(error);
   }
 }

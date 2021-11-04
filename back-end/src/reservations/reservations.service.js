@@ -9,14 +9,6 @@ function create(reservation) {
 };
 
 // List all reservations by date, ordered by time
-function list(date) {
-    return knex("reservations")
-        .select("*")
-        .where({ reservation_date: date })
-        .whereNot({ status: "finished" })
-        .orderBy("reservation_time");
-};
-
 function listByDate(date) {
   return knex("reservations")
     .select("*")
@@ -26,15 +18,6 @@ function listByDate(date) {
 }
 
 // Returns all reservations with partial match to specified phone number, ordered by date
-function searchByPhone(mobile_number) {
-  return knex("reservations")
-    .whereRaw(
-      "translate(mobile_number, '() -', '') like ?",
-      `%${mobile_number.replace(/\D/g, "")}%`
-    )
-    .orderBy("reservation_date");
-}
-
 function search(mobile_number) {
   return knex("reservations")
     .whereRaw(
@@ -67,9 +50,7 @@ function updateStatus(reservation_id, status) {
 
 module.exports = {
    create,
-   list,
    listByDate,
-   searchByPhone,
    search,
    read,
    update,
