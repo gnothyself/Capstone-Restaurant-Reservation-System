@@ -81,7 +81,7 @@ This app was developed according user stories provided by a ficticious restauran
 
 ## Back-end
 
-API Base Url: https://final-capstone-backend.herokuapp.com
+API Base Url: https://periodictables-backend.herokuapp.com
 
 | Endpoint | Description |
 | - | - |
