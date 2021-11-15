@@ -4,10 +4,9 @@ import { today, formatAsTime } from "../utils/date-time";
 import { postReservation, updateReservation, getReservation, } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-function ReservationForm() {
+function ReservationForm({ method }) {
   const history = useHistory();
-  const { params, url } = useRouteMatch();
-  const [method, setMethod] = useState("POST");
+  const { params } = useRouteMatch();
   const [existingData, setExistingData] = useState({});
   const [error, setError] = useState(null);
   const initialFormState = {
@@ -19,10 +18,6 @@ function ReservationForm() {
     people: 1,
   };
   const [formData, setFormData] = useState({...initialFormState});
-
-  useEffect(() => {
-    Object.keys(params).length ? setMethod("PUT") : setMethod("POST");
-  }, [history, params, url]);
 
   useEffect(() => {
     if (method === "PUT") {
@@ -139,7 +134,7 @@ function ReservationForm() {
 
   return (
     <div>
-      {method === "PUT" ? <h2>Edit Reservation </h2> : <h2>New Reservation </h2>}
+      {/* {method === "PUT" ? <h2>Edit Reservation </h2> : <h2>New Reservation </h2>} */}
       <form name="reservation" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="first_name">
