@@ -6,7 +6,7 @@ import { today, previous, next } from "../utils/date-time";
 import formatDisplayDate from "../utils/format-display-date";
 import ErrorAlert from "../layout/ErrorAlert";
 import Reservation from "../reservations/Reservation";
-import Table from "../tables/Table";
+import Table from "../tables/Table"; 
 
 function Dashboard({ date }) {
   const history = useHistory();
@@ -78,10 +78,10 @@ function Dashboard({ date }) {
       <div className="row">
         <div className="col-md-6 col-sm-12">
           <h4>Reservations for date: {date}</h4>
-          {reservations.map((reservation, index) =>
+          {reservations.map((reservation) =>
             reservation.status === "finished" ||
             reservation.status === "cancelled" ? null : (
-              <div key={index}>
+              <div key={reservation.reservation_id}>
               <Reservation
                 data={reservation}
                 setReservations={setReservations}
@@ -93,8 +93,8 @@ function Dashboard({ date }) {
         </div>
         <div className="col-md-6 col-sm-12">
           <h4>Tables</h4>
-          {tables.map((table, index) => (
-            <div key={index}>
+          {tables.map((table) => (
+            <div key={table.table_id}>
             <Table data={table} setTables={setTables}/>
             </div>
           ))}
